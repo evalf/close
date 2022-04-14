@@ -75,22 +75,10 @@
 //! closing in case error handling is desired.
 
 pub trait Close {
-    /// Defines the `close` method for manual object destruction.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// struct MyIOStruct;
-    ///
-    /// impl close::Close for MyIOStruct {
-    ///     type Error = std::io::Error;
-    ///     fn close(self) -> std::io::Result<()> {
-    ///         // ... fallible i/o code ...
-    ///         Ok(())
-    ///     }
-    /// }
-
+    /// The type returned in the event of a closing error.
     type Error: std::fmt::Debug;
+
+    /// Performs object destruction.
     fn close(self) -> Result<(), Self::Error>;
 }
 
