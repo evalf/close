@@ -179,22 +179,26 @@ impl<T: Close> Drop for Closing<T> {
 
 // Default implementations
 
-impl<T0: Close> Close for (T0,) {
-    type Error = T0::Error;
+impl Close for () {
+    type Error = ();
     fn close(self) -> Result<(), Self::Error> {
-        self.0.close()
+        Ok(())
+    }
+}
+
+impl<T0: Close> Close for (T0,) {
+    type Error = (Option<T0::Error>,);
+    fn close(self) -> Result<(), Self::Error> {
+        self.0.close().or_else(|e| Err((Some(e),)))
     }
 }
 
 impl<T0: Close, T1: Close> Close for (T0, T1) {
     type Error = (Option<T0::Error>, Option<T1::Error>);
     fn close(self) -> Result<(), Self::Error> {
-        let result = (self.0.close().err(), self.1.close().err());
-        if result.0.is_none() && result.1.is_none() {
-            Ok(())
-        }
-        else {
-            Err(result)
+        match (self.0.close(), self.1.close()) {
+          (Ok(_), Ok(_)) => Ok(()),
+          (r0, r1) => Err((r0.err(), r1.err()))
         }
     }
 }
@@ -202,12 +206,9 @@ impl<T0: Close, T1: Close> Close for (T0, T1) {
 impl<T0: Close, T1: Close, T2: Close> Close for (T0, T1, T2) {
     type Error = (Option<T0::Error>, Option<T1::Error>, Option<T2::Error>);
     fn close(self) -> Result<(), Self::Error> {
-        let result = (self.0.close().err(), self.1.close().err(), self.2.close().err());
-        if result.0.is_none() && result.1.is_none() && result.2.is_none() {
-            Ok(())
-        }
-        else {
-            Err(result)
+        match (self.0.close(), self.1.close(), self.2.close()) {
+          (Ok(_), Ok(_), Ok(_)) => Ok(()),
+          (r0, r1, r2) => Err((r0.err(), r1.err(), r2.err()))
         }
     }
 }
@@ -215,12 +216,9 @@ impl<T0: Close, T1: Close, T2: Close> Close for (T0, T1, T2) {
 impl<T0: Close, T1: Close, T2: Close, T3: Close> Close for (T0, T1, T2, T3) {
     type Error = (Option<T0::Error>, Option<T1::Error>, Option<T2::Error>, Option<T3::Error>);
     fn close(self) -> Result<(), Self::Error> {
-        let result = (self.0.close().err(), self.1.close().err(), self.2.close().err(), self.3.close().err());
-        if result.0.is_none() && result.1.is_none() && result.2.is_none() && result.3.is_none() {
-            Ok(())
-        }
-        else {
-            Err(result)
+        match (self.0.close(), self.1.close(), self.2.close(), self.3.close()) {
+          (Ok(_), Ok(_), Ok(_), Ok(_)) => Ok(()),
+          (r0, r1, r2, r3) => Err((r0.err(), r1.err(), r2.err(), r3.err()))
         }
     }
 }
