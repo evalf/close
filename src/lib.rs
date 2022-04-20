@@ -89,9 +89,9 @@ pub trait Close {
 /// ```
 /// use close::{Close, Closing};
 ///
-/// struct MyIOStruct;
+/// struct HasClose;
 ///
-/// impl MyIOStruct {
+/// impl HasClose {
 ///     fn new() -> Closing<Self> {
 ///         Self.into()
 ///     }
@@ -100,7 +100,7 @@ pub trait Close {
 ///     }
 /// }
 ///
-/// impl Close for MyIOStruct {
+/// impl Close for HasClose {
 ///     type Error = std::io::Error;
 ///     fn close(self) -> std::io::Result<()> {
 ///         // ... fallible i/o code ...
@@ -109,10 +109,10 @@ pub trait Close {
 /// }
 ///
 /// fn main() -> std::io::Result<()> {
-///     let s = MyIOStruct::new();
+///     let s = HasClose::new();
 ///     s.say_hello(); // automatic dereferencing
 ///     s.close()?; // manual closing
-///     let t = MyIOStruct::new();
+///     let t = HasClose::new();
 ///     Ok(())
 /// } // closing t on drop
 #[derive(Debug)]
