@@ -243,18 +243,6 @@ impl<T: Close> Close for Box<T> {
     }
 }
 
-impl<T: Close> Close for Option<T> {
-    type Error = T::Error;
-    fn close(self) -> Result<(), Self::Error> {
-        if let Some(v) = self {
-            v.close()
-        }
-        else {
-            Ok(())
-        }
-    }
-}
-
 impl Close for std::fs::File {
     type Error = std::io::Error;
     fn close(self) -> std::io::Result<()> {
