@@ -226,12 +226,12 @@ impl<T0: Close, T1: Close, T2: Close, T3: Close> Close for (T0, T1, T2, T3) {
 impl<T: Close> Close for Vec<T> {
     type Error = Vec<Option<T::Error>>;
     fn close(self) -> Result<(), Self::Error> {
-        let result: Self::Error = self.into_iter().map(|item| item.close().err()).collect();
-        if result.iter().all(|item| item.is_none()) {
+        let errors: Self::Error = self.into_iter().map(|item| item.close().err()).collect();
+        if errors.iter().all(|item| item.is_none()) {
             Ok(())
         }
         else {
-            Err(result)
+            Err(errors)
         }
     }
 }
