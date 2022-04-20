@@ -73,6 +73,12 @@
 //! out of scope. The difference is that the latter allows for a more ergonomic
 //! implementation, does not incur any runtime cost, and allows for manual
 //! closing in case error handling is desired.
+//!
+//! # Layout
+//!
+//! `Closing<T>` is guaranteed to have the same size, alignment, and ABI as `T`,
+//! and if `T` is FFI-safe, then so is `Closing<T>`. However, the same caveats
+//! apply as they do for [`MaybeUninit`][std::mem::MaybeUninit#layout].
 
 pub trait Close {
     /// The type returned in the event of a closing error.
@@ -116,6 +122,7 @@ pub trait Close {
 ///     Ok(())
 /// } // closing t on drop
 #[derive(Debug)]
+#[repr(transparent)]
 pub struct Closing<T: Close>(std::mem::MaybeUninit<T>);
 
 impl<T: Close> Closing<T> {
